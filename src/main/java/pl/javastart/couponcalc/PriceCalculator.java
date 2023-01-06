@@ -5,43 +5,40 @@ import java.util.List;
 public class PriceCalculator {
 
     public double calculatePrice(List<Product> products, List<Coupon> coupons) {
-        double price;
+        double price = 0;
         if (products == null) {
             return 0;
-        } else {
-            for (Product product : products) {
-                if (coupons == null) {
-                    return product.getPrice();
-                } else {
-                    for (Coupon coupon : coupons) {
-                        if (products.size() > 1) {
-                            if (coupons.size() > 1) {
-                                return getSumPriceForFewCoupons(products, coupons);
-                            } else {
-                                return getSumPriceForFewProducts(products, coupons);
-                            }
-                        } else if (product.getCategory().equals(coupon.getCategory())) {
-                            return getPriceAfterDiscount(product, coupon.getDiscountValueInPercents());
+        }
+        for (Product product : products) {
+            if (coupons == null) {
+                price += product.getPrice();
+            } else {
+                for (Coupon coupon : coupons) {
+                    if (products.size() > 1) {
+                        price = getSumPriceForFewProducts(products, coupons);
+                        if (coupons.size() > 1) {
+                            price = calculatePriceForCoupon(products, coupon);
                         }
+                    } else if (product.getCategory().equals(coupon.getCategory())) {
+                        price = getPriceAfterDiscount(product, coupon.getDiscountValueInPercents());
                     }
                 }
             }
+
         }
-        return 0;
+        return price;
     }
 
-    private double getSumPriceForFewCoupons(List<Product> products, List<Coupon> coupons) {
+    private double calculatePriceForCoupon(List<Product> products, Coupon coupon) {
         double sum = 0;
-        double tempPrice = 0;
         for (Product product : products) {
-            for (Coupon coupon : coupons) {
-                double priceAfterDiscount = getPriceAfterDiscount(product, coupon.getDiscountValueInPercents());
-                if (tempPrice < priceAfterDiscount) {
-                    tempPrice = priceAfterDiscount;
+            if (coupon != null) {
+                if (product.getCategory().equals(coupon.getCategory())) {
+                    sum = getPriceAfterDiscount(product, coupon.getDiscountValueInPercents());
+                } else {
+                    sum += product.getPrice();
                 }
-                sum = priceAfterDiscount + tempPrice;
             }
-
         }
         return sum;
     }

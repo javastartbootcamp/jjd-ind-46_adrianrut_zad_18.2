@@ -36,6 +36,21 @@ public class PriceCalculatorTest {
     }
 
     @Test
+    public void shouldReturnPriceForTwoProductAndNoCoupons() {
+
+        // given
+        List<Product> products = new ArrayList<>();
+        products.add(new Product("Masło", 5.99, Category.FOOD));
+        products.add(new Product("Opona", 100, Category.CAR));
+
+        // when
+        double result = priceCalculator.calculatePrice(products, null);
+
+        // then
+        assertThat(result).isEqualTo(105.99);
+    }
+
+    @Test
     public void shouldReturnPriceForSingleProductAndOneCoupon() {
 
         // given
